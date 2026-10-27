@@ -1,3 +1,4 @@
+import importlib.util
 import json
 import subprocess
 import sys
@@ -8,7 +9,11 @@ from io import StringIO
 from pathlib import Path
 from unittest import mock
 
-from helpers import render
+MODULE_PATH = Path(__file__).parents[1] / "helpers" / "render.py"
+SPEC = importlib.util.spec_from_file_location("video_use_render", MODULE_PATH)
+assert SPEC and SPEC.loader
+render = importlib.util.module_from_spec(SPEC)
+SPEC.loader.exec_module(render)
 
 
 class SubtitleCapabilityTests(unittest.TestCase):

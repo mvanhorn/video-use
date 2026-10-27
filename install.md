@@ -59,7 +59,7 @@ command -v ffmpeg >/dev/null || brew install ffmpeg
 # macOS — use this build when burning subtitles
 brew install ffmpeg-full
 export PATH="$(brew --prefix ffmpeg-full)/bin:$PATH"
-ffmpeg -hide_banner -filters 2>/dev/null | grep -w subtitles
+ffmpeg -hide_banner -filters 2>/dev/null | awk '$2 == "subtitles" { print; found = 1 } END { exit !found }'
 
 command -v yt-dlp >/dev/null || brew install yt-dlp     # optional
 
@@ -145,7 +145,7 @@ ffprobe -version | head -1
 If the user intends to burn subtitles, also verify the active binary:
 
 ```bash
-ffmpeg -hide_banner -filters 2>/dev/null | grep -w subtitles
+ffmpeg -hide_banner -filters 2>/dev/null | awk '$2 == "subtitles" { print; found = 1 } END { exit !found }'
 ```
 
 Full transcription test is optional at install time — it burns Scribe credits. Better to wait until the user hands you their first clip.

@@ -63,8 +63,8 @@ uv sync                         # or: pip install -e .
 brew install ffmpeg             # required; enough for subtitle-free editing
 # For subtitle burn-in, use the libass-enabled build and put it first on PATH:
 brew install ffmpeg-full
-export PATH="$(brew --prefix ffmpeg-full)/bin:$PATH"
-ffmpeg -hide_banner -filters 2>/dev/null | grep -w subtitles
+export PATH="$(brew --prefix ffmpeg-full)/bin:$PATH"   # also add this line to your shell profile (e.g. ~/.zshrc) so later sessions keep it
+ffmpeg -hide_banner -filters 2>/dev/null | awk '$2 == "subtitles" { print; found = 1 } END { exit !found }'
 brew install yt-dlp             # optional, for downloading online sources
 
 # 3. Add your ElevenLabs API key

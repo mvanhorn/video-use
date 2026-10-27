@@ -79,7 +79,7 @@ macOS (Homebrew):
   export PATH="$(brew --prefix ffmpeg-full)/bin:$PATH"
 
 Make sure that PATH entry takes precedence over another ffmpeg, then verify:
-  ffmpeg -hide_banner -filters | grep -w subtitles
+  ffmpeg -hide_banner -filters | awk '$2 == "subtitles"'
 
 Subtitle-free renders can continue with --no-subtitles.
 """

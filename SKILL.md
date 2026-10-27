@@ -60,7 +60,7 @@ The skill lives in `video-use/`. User footage lives wherever they put it. All se
 First-time install lives in `install.md` (clone, deps, ffmpeg, skill registration, API key). Don't re-run it every session; on cold start just verify:
 
 - `ELEVENLABS_API_KEY` resolves — either in the environment or in `.env` at the video-use repo root. If missing, ask the user to paste one and write it to `.env` (never to the user's `<videos_dir>`).
-- `ffmpeg` + `ffprobe` on PATH. When the project burns subtitles, verify that the selected `ffmpeg` exposes the libass-backed `subtitles` filter with `ffmpeg -hide_banner -filters | grep -w subtitles`; subtitle-free editing does not require libass.
+- `ffmpeg` + `ffprobe` on PATH. When the project burns subtitles, verify that the selected `ffmpeg` exposes the libass-backed `subtitles` filter with `ffmpeg -hide_banner -filters | awk '$2 == "subtitles" { print; found = 1 } END { exit !found }'`; subtitle-free editing does not require libass.
 - Python deps installed (`uv sync` or `pip install -e .` inside the repo).
 - Node.js + npm available if the session needs HyperFrames or Remotion slots. HyperFrames currently requires Node.js 22+.
 - `yt-dlp`, HyperFrames, Remotion, Manim installed only on first use.
@@ -307,7 +307,7 @@ Match the source unless the user asked for something specific. Common targets: `
 }
 ```
 
-`grade` is a preset name or raw ffmpeg filter. `overlays` are rendered animation clips. `subtitles` is optional and applied LAST. `subtitle_font` is optional, defaults to `Helvetica`, and must name an installed font that covers the caption language.
+`grade` is a preset name or raw ffmpeg filter. `overlays` are rendered animation clips. `subtitles` is optional and applied LAST. `subtitle_font` is optional and defaults to `Helvetica`. Name an installed font that covers the caption language: `render.py` only checks that it is a plain font name, and libass silently substitutes another font when the named one is missing, so check the burned captions in the preview for missing glyphs.
 
 ## Memory — `project.md`
 
