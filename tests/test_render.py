@@ -158,21 +158,25 @@ class SubtitlePreflightTests(unittest.TestCase):
                         self._run_main_until_extraction(edl_path, *args)
                     require.assert_not_called()
 
-    def test_missing_edl_subtitles_warns_and_skips_filter_requirement(self) -> None:
+    def test_missing_edl_subtitles_exits_before_extraction(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
             edl_path = self._write_edl(Path(temp_dir), subtitles="missing.srt")
-            output = StringIO()
+            argv = [
+                "render.py",
+                str(edl_path),
+                "-o",
+                str(Path(temp_dir) / "out.mp4"),
+            ]
             with (
+                mock.patch.object(sys, "argv", argv),
                 mock.patch.object(render, "require_subtitles_filter") as require,
-                redirect_stdout(output),
+                mock.patch.object(render, "extract_all_segments") as extract,
+                self.assertRaisesRegex(SystemExit, "subtitles file in EDL not found"),
             ):
-                self._run_main_until_extraction(edl_path)
+                render.main()
 
         require.assert_not_called()
-        self.assertIn(
-            "warning: subtitles path in EDL does not exist:", output.getvalue()
-        )
-        self.assertIn("missing.srt", output.getvalue())
+        extract.assert_not_called()
 
     def test_non_string_subtitle_font_exits_cleanly_before_extraction(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
